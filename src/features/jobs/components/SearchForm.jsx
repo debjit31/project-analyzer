@@ -36,7 +36,7 @@ const SearchForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+      <div className="bg-white rounded-lg shadow-sm border border-stone-200 dark:bg-stone-900 dark:border-stone-700 p-8">
         <div className="space-y-5">
           <Input
             id="jobTitle"

@@ -15,10 +15,10 @@ const JobCard = ({ job }) => {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-1">
               {job_title}
             </h3>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-4 text-sm text-stone-500 dark:text-stone-400">
               <span className="flex items-center gap-1">
                 <Building2 className="w-4 h-4" />
                 {company}
@@ -42,10 +42,10 @@ const JobCard = ({ job }) => {
 
       <CardContent>
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">
+          <h4 className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-2">
             Core Problem
           </h4>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
             {core_problem}
           </p>
         </div>

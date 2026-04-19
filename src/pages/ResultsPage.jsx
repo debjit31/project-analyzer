@@ -27,7 +27,7 @@ const ResultsPage = () => {
       <div className="mb-8">
         <Link
           to="/"
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          className="inline-flex items-center text-sm text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to search
@@ -35,10 +35,10 @@ const ResultsPage = () => {
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-1">
               Project Ideas
             </h1>
-            <p className="text-gray-600">
+            <p className="text-stone-600 dark:text-stone-400">
               {params.jobTitle && (
                 <span>
                   For <span className="font-medium">"{params.jobTitle}"</span>
@@ -55,7 +55,7 @@ const ResultsPage = () => {
           </div>
 
           {!isLoading && jobs.length > 0 && (
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-stone-500 dark:text-stone-400">
               {jobs.length} {jobs.length === 1 ? 'result' : 'results'} found
             </div>
           )}
@@ -72,8 +72,8 @@ const ResultsPage = () => {
 
       {/* Bottom CTA */}
       {!isLoading && !error && jobs.length > 0 && (
-        <div className="mt-12 text-center py-8 border-t border-gray-200">
-          <p className="text-gray-600 mb-4">
+        <div className="mt-12 text-center py-8 border-t border-stone-200 dark:border-stone-800">
+          <p className="text-stone-600 dark:text-stone-400 mb-4">
             Want to search for different jobs?
           </p>
           <Link to="/">

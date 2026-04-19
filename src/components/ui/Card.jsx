@@ -7,8 +7,8 @@ const Card = ({ className, children, hover = false, ...props }) => {
   return (
     <div
       className={cn(
-        'bg-white rounded-xl border border-gray-200 shadow-sm',
-        hover && 'transition-all duration-200 hover:shadow-md hover:border-gray-300',
+        'bg-white rounded-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-700',
+        hover && 'transition-all duration-150 hover:border-l-teal-500 hover:border-l-[3px]',
         className
       )}
       {...props}
@@ -37,7 +37,10 @@ const CardContent = ({ className, children, ...props }) => {
 const CardFooter = ({ className, children, ...props }) => {
   return (
     <div
-      className={cn('px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-xl', className)}
+      className={cn(
+        'px-6 py-4 bg-stone-50/80 border-t border-stone-100 rounded-b-lg dark:bg-stone-800/50 dark:border-stone-700',
+        className
+      )}
       {...props}
     >
       {children}

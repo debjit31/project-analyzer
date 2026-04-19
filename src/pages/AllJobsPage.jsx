@@ -17,14 +17,14 @@ const AllJobsPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 rounded-md bg-teal-600 flex items-center justify-center">
                 <Briefcase className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 font-[family-name:var(--font-heading)]">
                 All Job Listings
               </h1>
             </div>
-            <p className="text-gray-600">
+            <p className="text-stone-600 dark:text-stone-400">
               Browse all available positions and discover project ideas tailored to each role.
             </p>
           </div>
@@ -38,7 +38,7 @@ const AllJobsPage = () => {
         </div>
 
         {!isLoading && jobs.length > 0 && (
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-stone-500 dark:text-stone-400">
             {jobs.length} {jobs.length === 1 ? 'position' : 'positions'} available
           </div>
         )}
