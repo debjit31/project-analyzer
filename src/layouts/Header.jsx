@@ -1,5 +1,5 @@
 import { NavLink, Link } from 'react-router-dom';
-import { Compass, Sun, Moon } from 'lucide-react';
+import { Compass, Sun, Moon, Zap } from 'lucide-react';
 import { useTheme } from '../lib/ThemeContext';
 
 /**
@@ -36,6 +36,13 @@ const Header = () => {
             <NavLink to="/jobs" className={linkClass}>
               Browse Jobs
             </NavLink>
+            <Link
+              to="/app/dashboard"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors shadow-md shadow-teal-900/20"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              AI Copilot
+            </Link>
             <button
               onClick={toggleTheme}
               className="p-2 rounded-md text-stone-500 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-stone-100 dark:hover:bg-stone-800 transition-colors"
@@ -51,3 +58,5 @@ const Header = () => {
 };
 
 export { Header };
+
+

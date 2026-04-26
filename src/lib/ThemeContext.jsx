@@ -6,9 +6,9 @@ const getInitialTheme = () => {
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'dark'; // Default to dark mode
   }
-  return 'light';
+  return 'dark';
 };
 
 const ThemeProvider = ({ children }) => {

@@ -167,13 +167,29 @@ class OpenAIProvider(BaseAIProvider):
 # ---------------------------------------------------------------------------
 
 
+class NoOpAIProvider(BaseAIProvider):
+    """
+    Fallback provider used when no AI API key is configured.
+    Returns empty analysis so the job fetch pipeline still works.
+    """
+
+    async def analyse(self, description: str, job_title: str, company: str) -> JobAnalysis:
+        return JobAnalysis(tech_stack=[], core_problem="", project_idea="")
+
+
 def create_ai_provider() -> BaseAIProvider:
-    """Instantiate the configured AI provider."""
+    """Instantiate the configured AI provider, falling back to NoOp if unconfigured."""
     settings = get_settings()
     provider = settings.ai_provider.lower()
     logger.info("ai.provider", provider=provider)
     if provider == "openai":
+        if not settings.openai_api_key:
+            logger.warning("ai.provider.no_key", provider="openai", fallback="noop")
+            return NoOpAIProvider()
         return OpenAIProvider()
+    if not settings.gemini_api_key:
+        logger.warning("ai.provider.no_key", provider="gemini", fallback="noop")
+        return NoOpAIProvider()
     return GeminiProvider()
 
 
