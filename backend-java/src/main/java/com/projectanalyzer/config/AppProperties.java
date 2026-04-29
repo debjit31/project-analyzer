@@ -68,4 +68,11 @@ public class AppProperties {
 
     /** Maximum cached search entries (min 16). */
     private int cacheMaxSize = 128;
+
+    // ── JWT ───────────────────────────────────────────────────────────────────
+    /**
+     * HMAC-SHA256 signing key for JWT tokens.
+     * Must be at least 32 characters. Override in production.
+     */
+    private String jwtSecret = "change-me-in-production-must-be-32-chars-long!!";
 }
