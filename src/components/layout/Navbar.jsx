@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Sun, Moon, ChevronDown, Settings, LogOut, User, Search } from 'lucide-react';
 import { useTheme } from '../../lib/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
 const routeLabels = {
@@ -14,11 +15,34 @@ const routeLabels = {
   '/app/tracker': 'Application Tracker',
 };
 
+/** Returns initials (up to 2 characters) from a display name. */
+function getInitials(name = '') {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+}
+
 const Navbar = () => {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const pageTitle = routeLabels[location.pathname] ?? 'Dashboard';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
+  const displayName = user?.name ?? '';
+  const firstName = displayName.split(' ')[0] || 'User';
+  const initials = getInitials(displayName) || 'U';
+  const email = user?.email ?? '';
+  const avatarUrl = user?.avatarUrl;
 
   return (
     <header className="h-16 flex items-center gap-4 px-6 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md shrink-0">
@@ -58,10 +82,18 @@ const Navbar = () => {
       <DropdownMenu.Root open={open} onOpenChange={setOpen}>
         <DropdownMenu.Trigger asChild>
           <button className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-neutral-800 transition-colors">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              DC
-            </div>
-            <span className="text-sm text-neutral-300 hidden md:block">Debjit</span>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="w-7 h-7 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {initials}
+              </div>
+            )}
+            <span className="text-sm text-neutral-300 hidden md:block">{firstName}</span>
             <ChevronDown
               className={cn('w-3.5 h-3.5 text-neutral-500 transition-transform hidden md:block', open && 'rotate-180')}
             />
@@ -80,8 +112,8 @@ const Navbar = () => {
                   className="z-50 w-52 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl p-1.5 outline-none"
                 >
                   <div className="px-3 py-2.5 border-b border-neutral-800 mb-1">
-                    <p className="text-sm font-medium text-neutral-100">Debjit Chattopadhyay</p>
-                    <p className="text-xs text-neutral-500 truncate">debjit@example.com</p>
+                    <p className="text-sm font-medium text-neutral-100">{displayName || 'User'}</p>
+                    <p className="text-xs text-neutral-500 truncate">{email}</p>
                   </div>
                   {[
                     { icon: User, label: 'Profile' },
@@ -96,7 +128,10 @@ const Navbar = () => {
                     </DropdownMenu.Item>
                   ))}
                   <DropdownMenu.Separator className="my-1 h-px bg-neutral-800" />
-                  <DropdownMenu.Item className="flex items-center gap-2.5 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-lg cursor-pointer outline-none transition-colors">
+                  <DropdownMenu.Item
+                    onClick={handleLogout}
+                    className="flex items-center gap-2.5 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-lg cursor-pointer outline-none transition-colors"
+                  >
                     <LogOut className="w-4 h-4" />
                     Sign Out
                   </DropdownMenu.Item>

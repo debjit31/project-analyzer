@@ -6,8 +6,18 @@ import JobFeedPage from '../pages/JobFeedPage';
 import ResumeAnalyzerPage from '../pages/ResumeAnalyzerPage';
 import CoverLetterPage from '../pages/CoverLetterPage';
 import ApplicationTrackerPage from '../pages/ApplicationTrackerPage';
+import LoginPage from '../pages/LoginPage';
+import SignupPage from '../pages/SignupPage';
+import AuthCallbackPage from '../pages/AuthCallbackPage';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 
 export const router = createBrowserRouter([
+  // ── Auth routes (public) ───────────────────────────────────────────────────
+  { path: '/login', element: <LoginPage /> },
+  { path: '/signup', element: <SignupPage /> },
+  { path: '/auth/callback', element: <AuthCallbackPage /> },
+
+  // ── Legacy routes (AppLayout) ─────────────────────────────────────────────
   {
     path: '/',
     element: <AppLayout />,
@@ -19,9 +29,15 @@ export const router = createBrowserRouter([
       { path: 'jobs/:id', element: <JobDetailPage /> },
     ],
   },
+
+  // ── Copilot app routes (protected) ────────────────────────────────────────
   {
     path: '/app',
-    element: <CopilotLayout />,
+    element: (
+      <ProtectedRoute>
+        <CopilotLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'dashboard', element: <DashboardPage /> },

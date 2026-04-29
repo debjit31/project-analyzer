@@ -1,6 +1,9 @@
 package com.projectanalyzer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projectanalyzer.auth.JwtService;
+import com.projectanalyzer.auth.OAuth2AuthenticationSuccessHandler;
+import com.projectanalyzer.auth.UserRepository;
 import com.projectanalyzer.model.JobAnalysis;
 import com.projectanalyzer.model.JobListing;
 import com.projectanalyzer.model.SearchRequest;
@@ -12,12 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,9 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Slice tests for {@link JobsController}.
  *
  * <p>Uses {@code @WebMvcTest} to test only the web layer;
- * the orchestrator is mocked.
+ * the orchestrator and security beans are mocked.
+ * <p>POST requests include a CSRF token ({@code .with(csrf())}) to be compatible
+ * with Spring Security's default CSRF protection in the test context.
+ * In production, CSRF is disabled via {@code SecurityConfig} (JWT-based API).
  */
 @WebMvcTest(JobsController.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class JobsControllerTest {
 
     @Autowired
@@ -39,9 +50,23 @@ class JobsControllerTest {
     @MockBean
     private JobOrchestratorService orchestrator;
 
-    // ── Health ────────────────────────────────────────────────────────────────
+    // Mock security beans required by SecurityConfig / JwtAuthenticationFilter
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @MockBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    // ── Health ─────────────────────────────────────────────────────────────────
 
     @Test
+    @WithMockUser
     @DisplayName("GET /api/v1/health → 200 {status: ok}")
     void healthCheck() throws Exception {
         mockMvc.perform(get("/api/v1/health"))
@@ -52,6 +77,7 @@ class JobsControllerTest {
     // ── Generate Projects ──────────────────────────────────────────────────────
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/v1/generate-projects → 200 with enriched listings")
     void generateProjects_returnsListings() throws Exception {
         JobAnalysis analysis = new JobAnalysis(
@@ -70,6 +96,7 @@ class JobsControllerTest {
         SearchRequest request = new SearchRequest("Senior React Developer", "San Francisco", "7d");
 
         mockMvc.perform(post("/api/v1/generate-projects")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -81,11 +108,13 @@ class JobsControllerTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/v1/generate-projects → 400 when job_title is blank")
     void generateProjects_blankTitle_returns400() throws Exception {
         String badRequest = "{\"job_title\":\"\",\"location\":\"\",\"date_posted\":\"anytime\"}";
 
         mockMvc.perform(post("/api/v1/generate-projects")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badRequest))
                 .andExpect(status().isBadRequest())
@@ -93,6 +122,7 @@ class JobsControllerTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/v1/generate-projects → 200 with empty list when no jobs found")
     void generateProjects_noJobs_returnsEmpty() throws Exception {
         when(orchestrator.generateProjects(any(SearchRequest.class)))
@@ -101,6 +131,7 @@ class JobsControllerTest {
         SearchRequest request = new SearchRequest("Unicorn Developer", "", "anytime");
 
         mockMvc.perform(post("/api/v1/generate-projects")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -113,6 +144,7 @@ class JobsControllerTest {
     // ── Jobs Search (alias) ────────────────────────────────────────────────────
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/v1/jobs/search → 200 (alias for generate-projects)")
     void searchJobs_aliasWorks() throws Exception {
         when(orchestrator.generateProjects(any(SearchRequest.class)))
@@ -121,6 +153,7 @@ class JobsControllerTest {
         SearchRequest request = new SearchRequest("Backend Engineer", "Remote", "7d");
 
         mockMvc.perform(post("/api/v1/jobs/search")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -130,6 +163,7 @@ class JobsControllerTest {
     // ── Job Feed ──────────────────────────────────────────────────────────────
 
     @Test
+    @WithMockUser
     @DisplayName("GET /api/v1/jobs/feed → 200 with default params")
     void getJobFeed_defaultParams() throws Exception {
         when(orchestrator.generateProjects(any(SearchRequest.class)))
@@ -141,6 +175,7 @@ class JobsControllerTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("GET /api/v1/jobs/feed → 200 with custom q and location")
     void getJobFeed_withParams() throws Exception {
         when(orchestrator.generateProjects(any(SearchRequest.class)))
@@ -157,6 +192,7 @@ class JobsControllerTest {
     // ── Dashboard Stats ───────────────────────────────────────────────────────
 
     @Test
+    @WithMockUser
     @DisplayName("GET /api/v1/dashboard/stats → 200 with expected fields")
     void getDashboardStats() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/stats"))
