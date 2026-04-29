@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Java / Maven build artifacts
+backend-java/target/
+*.class
+*.jar
+*.war
+
+# Python virtual environments
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc

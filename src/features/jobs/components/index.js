@@ -1,4 +1,3 @@
-export { SearchForm } from './SearchForm';
 export { JobCard } from './JobCard';
 export { JobCardSkeleton } from './JobCardSkeleton';
 export { JobList } from './JobList';

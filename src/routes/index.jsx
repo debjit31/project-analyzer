@@ -1,6 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout, CopilotLayout } from '../layouts';
-import { HomePage, ResultsPage, AllJobsPage, JobDetailPage } from '../pages';
+import { ResultsPage, AllJobsPage, JobDetailPage } from '../pages';
 import DashboardPage from '../pages/DashboardPage';
 import JobFeedPage from '../pages/JobFeedPage';
 import ResumeAnalyzerPage from '../pages/ResumeAnalyzerPage';
@@ -12,7 +12,8 @@ export const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <HomePage /> },
+      // Redirect root to the /app dashboard
+      { index: true, element: <Navigate to="/app" replace /> },
       { path: 'results', element: <ResultsPage /> },
       { path: 'jobs', element: <AllJobsPage /> },
       { path: 'jobs/:id', element: <JobDetailPage /> },

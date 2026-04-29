@@ -19,7 +19,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/app" className="flex items-center gap-2 group">
             <div className="w-9 h-9 rounded-md bg-teal-600 flex items-center justify-center">
               <Compass className="w-5 h-5 text-white" />
             </div>
@@ -30,9 +30,6 @@ const Header = () => {
           </Link>
 
           <nav className="flex items-center gap-6">
-            <NavLink to="/" className={linkClass} end>
-              Home
-            </NavLink>
             <NavLink to="/jobs" className={linkClass}>
               Browse Jobs
             </NavLink>

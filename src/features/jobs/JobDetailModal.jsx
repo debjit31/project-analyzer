@@ -21,8 +21,10 @@ const JobDetailModal = ({ job, matchScore, open, onClose }) => {
 
   if (!job) return null;
 
-  const reqList = mockDetails.requirements[parseInt(job.id) % 3];
-  const salary = mockDetails.salary[parseInt(job.id) % 4];
+  // parseInt may return NaN for UUID-style IDs from the real API — fall back to index 0
+  const idIndex = parseInt(job.id, 10);
+  const reqList = mockDetails.requirements[(isNaN(idIndex) ? 0 : idIndex) % 3] ?? [];
+  const salary = mockDetails.salary[(isNaN(idIndex) ? 0 : idIndex) % 4];
 
   const handleApply = () => {
     setApplied(true);
@@ -68,14 +70,16 @@ const JobDetailModal = ({ job, matchScore, open, onClose }) => {
         {/* Description */}
         <div>
           <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">About the role</h3>
-          <p className="text-sm text-neutral-300 leading-relaxed">{job.description}</p>
+          <p className="text-sm text-neutral-300 leading-relaxed whitespace-pre-wrap">{job.description}</p>
         </div>
 
         {/* Core problem */}
+        {job.analysis?.core_problem && (
         <div className="p-4 bg-teal-950/40 border border-teal-800/40 rounded-xl">
           <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-1.5">Core Challenge</p>
-          <p className="text-sm text-neutral-300 leading-relaxed">{job.analysis.core_problem}</p>
+          <p className="text-sm text-neutral-300 leading-relaxed">{job.analysis?.core_problem ?? 'No analysis available.'}</p>
         </div>
+        )}
 
         {/* Requirements */}
         <div>
@@ -96,20 +100,22 @@ const JobDetailModal = ({ job, matchScore, open, onClose }) => {
           </ul>
         </div>
 
-        {/* Tech stack */}
-        <div>
-          <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2.5">Tech Stack</h3>
-          <div className="flex flex-wrap gap-2">
-            {job.analysis.tech_stack.map((tech) => (
-              <span
-                key={tech}
-                className="text-xs px-3 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 border border-neutral-700"
-              >
-                {tech}
-              </span>
-            ))}
+        {/* Tech stack — only render if the API returned at least one item */}
+        {(job.analysis?.tech_stack?.length > 0) && (
+          <div>
+            <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2.5">Tech Stack</h3>
+            <div className="flex flex-wrap gap-2">
+              {job.analysis.tech_stack.map((tech) => (
+                <span
+                  key={tech}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 border border-neutral-700"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </ModalBody>
 
       <ModalFooter>
