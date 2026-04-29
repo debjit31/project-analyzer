@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +79,6 @@ public class JSearchService {
         log.info("jsearch.search query={} date_posted={}", combinedQuery, dateMapped);
 
         try {
-            long timeoutMillis = (long) (appProperties.getHttpTimeoutSeconds() * 1000);
             String rawResponse = webClient.get()
                     .uri(appProperties.getJsearchBaseUrl() + "/search", uriBuilder ->
                             uriBuilder
@@ -93,7 +91,6 @@ public class JSearchService {
                     .header("X-RapidAPI-Host", "jsearch.p.rapidapi.com")
                     .retrieve()
                     .bodyToMono(String.class)
-                    .timeout(Duration.ofMillis(timeoutMillis))
                     .block();
 
             JsonNode root = objectMapper.readTree(rawResponse);
